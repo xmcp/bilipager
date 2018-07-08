@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name         bilipager
 // @namespace    http://s.xmcp.ml/
-// @version      0.2
+// @version      0.2.1
 // @description  人类能用的B站分P列表
 // @author       xmcp
 // @match        *://www.bilibili.com/video/*
+// @supportURL   https://github.com/xmcp/bilipager
+// @contributionURL https://s.xmcp.ml/pakkujs/donate.png
 // @grant        none
 // ==/UserScript==
 
@@ -35,7 +37,7 @@ const CSSTEXT=`
     width: ${WIDTH}px;
     position: fixed;
     height: 100%;
-    background-color: rgba(205,205,205,.9);
+    background-color: rgba(225,225,225,.9);
     top: 0;
     left: -${WIDTH-1}px;
     opacity: 0;
@@ -52,9 +54,8 @@ const CSSTEXT=`
 }
 
 .bilipager-list p {
-    line-height: 2em;
     overflow: hidden;
-    padding-left: .5em;
+    padding: .5em 0 .5em .5em;
     cursor: pointer;
     white-space: nowrap;
 }
@@ -68,7 +69,7 @@ const CSSTEXT=`
 }
 
 .bilipager-list p:hover {
-    background-color: rgba(255,255,255,.9);
+    background-color: rgba(255,255,255,.8);
     white-space: normal;
 }
 
