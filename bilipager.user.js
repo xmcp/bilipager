@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilipager
 // @namespace    http://s.xmcp.ml/
-// @version      0.2.1
+// @version      0.3
 // @description  人类能用的B站分P列表
 // @author       xmcp
 // @match        *://www.bilibili.com/video/*
@@ -12,8 +12,7 @@
 
 const ZINDEX_NORMAL=999;
 const ZINDEX_FULLSCREEN=2147483647;
-const WIDTH=300;
-const USE_MAGIC_SWITCH=true;
+const WIDTH=350;
 const CSSTEXT=`
 .bilipager-list::-webkit-scrollbar {
     width: 10px;
@@ -55,9 +54,10 @@ const CSSTEXT=`
 
 .bilipager-list p {
     overflow: hidden;
-    padding: .5em 0 .5em .5em;
+    padding: .5em .3em .5em .5em;
     cursor: pointer;
     white-space: nowrap;
+    transition: padding .2s ease;
 }
 
 .bilipager-list p code {
@@ -71,11 +71,32 @@ const CSSTEXT=`
 .bilipager-list p:hover {
     background-color: rgba(255,255,255,.8);
     white-space: normal;
+    padding: .5em 0 .5em .8em;
+    box-shadow: 0 1px 25px rgba(0,0,0,.3);
 }
 
 .bilipager-list p.bilipager-curp {
     background-color: black;
     color: white;
+}
+
+.bilipager-list p.animation {
+    color: black;
+    -webkit-animation: page-switch 1s ease;
+            animation: page-switch 1s ease;
+}
+
+@-webkit-keyframes page-switch {
+    0%   {box-shadow: 0 1px 25px rgba(0,0,0,.3);   background-color: rgba(255,255,255,.8);}
+    20%  {box-shadow: 0 1px 25px rgba(0,0,255,.5); background-color: rgba(205,205,255,1); }
+    50%  {box-shadow: 0 1px 25px rgba(0,0,255,.5); background-color: rgba(205,205,255,1); }
+    100% {box-shadow: 0 1px 25px rgba(0,0,0,.3);   background-color: rgba(255,255,255,.8);}
+}
+@keyframes page-switch {
+    0%   {box-shadow: 0 1px 25px rgba(0,0,0,.3);   background-color: rgba(255,255,255,.8);}
+    20%  {box-shadow: 0 1px 25px rgba(0,0,255,.5); background-color: rgba(205,205,255,1); }
+    50%  {box-shadow: 0 1px 25px rgba(0,0,255,.5); background-color: rgba(205,205,255,1); }
+    100% {box-shadow: 0 1px 25px rgba(0,0,0,.3);   background-color: rgba(255,255,255,.8);}
 }
 
 .bilipager-popover {
@@ -155,32 +176,41 @@ const CSSTEXT=`
                 li.appendChild(li_2);
                 
                 li.addEventListener('click',function() {
-                    const paginate_link=document.querySelector(`a.router-link-active[href="/video/av${aid}/?p=${p.page}"]`);
-                    if(paginate_link) {
-                        console.log('switch: pagniate link');
-                        paginate_link.click();
-                    } else if(p.page===1 || !USE_MAGIC_SWITCH) {
-                        console.log('switch: reload');
+                    li.classList.add('animation');
+                    
+                    const ind_10=Math.floor((p.page-1)/10)*10+1;
+                    const ind_30=Math.floor((p.page-1)/30)*30+1;
+                    
+                    function paginate_failed() {
+                        //alert('pagination failed');
                         location.href='//www.bilibili.com/video/av'+aid+'/?p='+p.page;
-                    } else {
-                        console.log('switch: magic');
-                        // go to previous p
-                        window.bilibiliPlayer({aid:aid, cid:''+plist.data[p.page-2].cid, p:''+p.page});
-                        // then press the "next" button
-                        let retry_cnt=50;
-                        setTimeout(function self() {
-                            const btn=document.querySelector('.bilibili-player-iconfont.bilibili-player-iconfont-next');
-                            if(btn) {
-                                btn.click();
-                            } else if(retry_cnt--) {
-                                setTimeout(self,200);
-                            } else { // failed
-                                location.reload();
-                            }
-                        },400);
-                        // set the url
-                        history.pushState({},'','//www.bilibili.com/video/av'+aid+'/?p='+p.page);
                     }
+                    
+                    for(const pager_30 of document.querySelectorAll('#multi_page .more-box li')) {
+                        if(pager_30.textContent.startsWith(ind_30+'-')) {
+                            pager_30.click();
+                            setTimeout(function() {
+                                for(const pager_10 of document.querySelectorAll('#multi_page .paging li')) {
+                                    if(pager_10.textContent.startsWith(ind_10+'-')) {
+                                        pager_10.click();
+                                        setTimeout(function() {
+                                            const paginate_link=document.querySelector(`a.router-link-active[href="/video/av${aid}/?p=${p.page}"]`);
+                                            if(paginate_link) {
+                                                console.log('switch: pagniate link');
+                                                paginate_link.click();
+                                                return;
+                                            }
+                                            paginate_failed();
+                                        },1);
+                                        return;
+                                    }
+                                }
+                                paginate_failed();
+                            },1);
+                            return;
+                        }
+                    }
+                    paginate_failed();
                 });
                 list_root.appendChild(li);
                 
