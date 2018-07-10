@@ -137,21 +137,23 @@ const CSSTEXT=`
         if(!playlist_cache[aid]) {
             playlist_cache[aid]=fetch('https://api.bilibili.com/x/player/pagelist?aid='+aid).then(res=>res.json());
         }
-        list_root.textContent='';
-        popover.textContent='';
-
         playlist_cache[aid].then(function(plist) {
+            list_root.textContent='';
+            popover.textContent='';
+            
             console.log('!!',plist);
             if(plist.data.length<=1) return;
 
             plist.data.forEach(function(p) {
                 let li=document.createElement('p');
+                
                 let li_1=document.createElement('code');
                 li_1.textContent=`[${p.page}] ${format_duration(p.duration)} `;
                 li.appendChild(li_1);
                 let li_2=document.createElement('span');
                 li_2.textContent=`${p.part}`;
                 li.appendChild(li_2);
+                
                 li.addEventListener('click',function() {
                     const paginate_link=document.querySelector(`a.router-link-active[href="/video/av${aid}/?p=${p.page}"]`);
                     if(paginate_link) {
@@ -181,6 +183,7 @@ const CSSTEXT=`
                     }
                 });
                 list_root.appendChild(li);
+                
                 if(p.cid===parseInt(window.cid)) {
                     li.className='bilipager-curp';
                     if(li.scrollIntoViewIfNeeded) {
