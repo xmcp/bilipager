@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilipager
 // @namespace    http://s.xmcp.ml/
-// @version      0.3.1
+// @version      0.3.2
 // @description  人类能用的B站分P列表
 // @author       xmcp
 // @match        *://www.bilibili.com/video/*
@@ -109,7 +109,7 @@ const CSSTEXT=`
     padding: 0 .5em;
     background-color: black;
     color: white;
-    top: 150px;
+    top: 42px;
     left: 10px;
     z-index: ${ZINDEX_NORMAL};
     border-radius: 3px;
