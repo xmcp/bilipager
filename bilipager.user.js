@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         bilipager
 // @namespace    http://s.xmcp.ml/
-// @version      0.3.2
+// @version      0.3.3
 // @description  人类能用的B站分P列表
 // @author       xmcp
 // @match        *://www.bilibili.com/video/*
@@ -10,7 +10,7 @@
 // @grant        none
 // ==/UserScript==
 
-const ZINDEX_NORMAL=999;
+const ZINDEX_NORMAL=114514;
 const ZINDEX_FULLSCREEN=2147483647;
 const WIDTH=350;
 const ANIMATION_TIME_MS=200;
